@@ -22,6 +22,8 @@ enum class TokenType {
     LPAR,
     RPAR,
     SEMICOLON,
+    IDENTIFIER,
+    NUMBER,
 };
 
 class Token {
