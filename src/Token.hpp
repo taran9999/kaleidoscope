@@ -24,6 +24,7 @@ enum class TokenType {
     SEMICOLON,
     IDENTIFIER,
     NUMBER,
+    END,
 };
 
 class Token {
