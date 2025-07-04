@@ -10,6 +10,7 @@ private:
     unsigned int line;
     unsigned int col;
 
+    void NextChar();
     Token TokenizeIdentifier();
     Token TokenizeNumber();
 

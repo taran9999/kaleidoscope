@@ -1,15 +1,55 @@
 #include "Lexer.hpp"
 #include "Token.hpp"
 #include <cctype>
+#include <string>
 
-Lexer::Lexer(std::ifstream& f) : f(f) {}
+Lexer::Lexer(std::ifstream& f) : f(f), line(1), col(0) {}
 
-Token Lexer::NextToken() {
-    if(c == EOF) return Token(TokenType::END, "", line, col);
+void Lexer::NextChar() {
+    if(c == EOF) return;
 
     c = f.get();
     col++;
 
+    if(c == '\n') {
+        line++;
+        col = 0;
+    }
+}
+
+Token Lexer::TokenizeIdentifier() {
+    std::string data;
+    unsigned int curr_col = col;
+
+    while(std::isalnum(c)) {
+        data += c;
+        NextChar();
+    }
+
+    if(data == "def") return Token(TokenType::DEF, "", line, curr_col);
+    else if(data == "if") return Token(TokenType::IF, "", line, curr_col);
+    else if(data == "else") return Token(TokenType::ELSE, "", line, curr_col);
+    else if(data == "for") return Token(TokenType::FOR, "", line, curr_col);
+    else if(data == "extern") return Token(TokenType::EXTERN, "", line, curr_col);
+    else return Token(TokenType::IDENTIFIER, data, line, curr_col);
+}
+
+Token Lexer::TokenizeNumber() {
+    std::string data;
+    unsigned int curr_col = col;
+
+    while(std::isdigit(c) || c == '.') {
+        data += c;
+        NextChar();
+    }
+
+    return Token(TokenType::NUMBER, data, line, curr_col);
+}
+
+Token Lexer::NextToken() {
+    if(c == EOF) return Token(TokenType::END, "", line, col);
+
+    NextChar();
     if(std::isalpha(c)) return TokenizeIdentifier();
     else if(std::isdigit(c)) return TokenizeNumber();
 
@@ -19,12 +59,6 @@ Token Lexer::NextToken() {
     else if(c == '(') return Token(TokenType::LPAR, "", line, col);
     else if(c == ')') return Token(TokenType::RPAR, "", line, col);
     else if(c == ';') return Token(TokenType::SEMICOLON, "", line, col);
-
-    else if(c == '\n') {
-        line++;
-        col = 0;
-        return NextToken();
-    }
 
     else return NextToken();
 }
