@@ -3,6 +3,9 @@
 #include <string>
 
 enum class TokenType {
+    IDENTIFIER,
+    NUMBER,
+
     // keywords
     DEF,
     IF,
@@ -22,8 +25,6 @@ enum class TokenType {
     LPAR,
     RPAR,
     SEMICOLON,
-    IDENTIFIER,
-    NUMBER,
     END,
 };
 
