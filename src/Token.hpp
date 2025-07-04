@@ -2,31 +2,32 @@
 
 #include <string>
 
+#define TOKEN_TYPES \
+    X(IDENTIFIER) \
+    X(NUMBER) \
+    X(DEF) \
+    X(IF) \
+    X(ELSE) \
+    X(FOR) \
+    X(EXTERN) \
+    X(PLUS) \
+    X(MINUS) \
+    X(LT) \
+    X(LE) \
+    X(GT) \
+    X(GE) \
+    X(LPAR) \
+    X(RPAR) \
+    X(SEMICOLON) \
+    X(END)
+
+#define X(name) name,
 enum class TokenType {
-    IDENTIFIER,
-    NUMBER,
-
-    // keywords
-    DEF,
-    IF,
-    ELSE,
-    FOR,
-    EXTERN,
-
-    // binary operators
-    PLUS,
-    MINUS,
-    LT,
-    LE,
-    GT,
-    GE,
-
-    // misc
-    LPAR,
-    RPAR,
-    SEMICOLON,
-    END,
+    TOKEN_TYPES
 };
+#undef X
+
+const char* string_of_token_type(TokenType type);
 
 class Token {
 public:
