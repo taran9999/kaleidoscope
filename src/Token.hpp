@@ -7,6 +7,7 @@
     X(NUMBER) \
     X(DEF) \
     X(IF) \
+    X(THEN) \
     X(ELSE) \
     X(FOR) \
     X(EXTERN) \

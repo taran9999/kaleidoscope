@@ -28,6 +28,7 @@ Token Lexer::TokenizeIdentifier() {
 
     if(data == "def") return Token(TokenType::DEF, "", line, curr_col);
     else if(data == "if") return Token(TokenType::IF, "", line, curr_col);
+    else if(data == "then") return Token(TokenType::THEN, "", line, curr_col);
     else if(data == "else") return Token(TokenType::ELSE, "", line, curr_col);
     else if(data == "for") return Token(TokenType::FOR, "", line, curr_col);
     else if(data == "extern") return Token(TokenType::EXTERN, "", line, curr_col);
