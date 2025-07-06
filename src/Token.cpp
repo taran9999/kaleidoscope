@@ -22,5 +22,6 @@ std::string Token::to_string() {
 #define X(name) case TokenType::name: return #name;
 const char* string_of_token_type(TokenType type) {
     switch(type) { TOKEN_TYPES }
+    return "unknown";
 }
 #undef X
