@@ -31,5 +31,11 @@ const char* string_of_token_type(TokenType type);
 
 class Token {
 public:
-    Token(TokenType type, std::string data, int line, int col);
+    TokenType type;
+    std::string data;
+    unsigned int line;
+    unsigned int col;
+
+    Token(TokenType type, std::string data, unsigned int line, unsigned int col);
+    std::string to_string();
 };
