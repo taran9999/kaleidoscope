@@ -3,7 +3,7 @@
 #include <cctype>
 #include <string>
 
-Lexer::Lexer(std::ifstream& f) : f(f), line(1), col(0) {}
+Lexer::Lexer(std::ifstream& f) : f(f), line(1), col(0), first(true) {}
 
 void Lexer::NextChar() {
     if(c == EOF) return;
@@ -26,6 +26,8 @@ Token Lexer::TokenizeIdentifier() {
         NextChar();
     }
 
+    first = true;
+
     if(data == "def") return Token(TokenType::DEF, "", line, curr_col);
     else if(data == "if") return Token(TokenType::IF, "", line, curr_col);
     else if(data == "then") return Token(TokenType::THEN, "", line, curr_col);
@@ -44,13 +46,17 @@ Token Lexer::TokenizeNumber() {
         NextChar();
     }
 
+    first = true;
+
     return Token(TokenType::NUMBER, data, line, curr_col);
 }
 
 Token Lexer::NextToken() {
     if(c == EOF) return Token(TokenType::END, "", line, col);
 
-    NextChar();
+    if(!first) NextChar();
+    else first = false;
+
     if(std::isalpha(c)) return TokenizeIdentifier();
     else if(std::isdigit(c)) return TokenizeNumber();
 

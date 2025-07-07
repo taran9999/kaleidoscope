@@ -9,6 +9,7 @@ private:
     std::ifstream& f;
     unsigned int line;
     unsigned int col;
+    bool first;
 
     void NextChar();
     Token TokenizeIdentifier();
