@@ -67,5 +67,21 @@ Token Lexer::NextToken() {
     else if(c == ')') return Token(TokenType::RPAR, "", line, col);
     else if(c == ';') return Token(TokenType::SEMICOLON, "", line, col);
 
+    else if(c == '<') {
+        if(f.peek() == '=') {
+            NextChar();
+            return Token(TokenType::LE, "", line, col);
+        }
+        else return Token(TokenType::LT, "", line, col);
+    }
+
+    else if(c == '>') {
+        if(f.peek() == '=') {
+            NextChar();
+            return Token(TokenType::GE, "", line, col);
+        }
+        else return Token(TokenType::GT, "", line, col);
+    }
+
     else return NextToken();
 }
