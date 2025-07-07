@@ -3,7 +3,7 @@
 #include <cctype>
 #include <string>
 
-Lexer::Lexer(std::ifstream& f) : f(f), line(1), col(0), first(true) {}
+Lexer::Lexer(std::ifstream& f) : f(f), line(1), col(0), first(false) {}
 
 void Lexer::NextChar() {
     if(c == EOF) return;
