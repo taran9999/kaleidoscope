@@ -19,6 +19,7 @@ void Lexer::NextChar() {
 
 Token Lexer::TokenizeIdentifier() {
     std::string data;
+    unsigned int curr_line = line;
     unsigned int curr_col = col;
 
     while(std::isalnum(c)) {
@@ -28,17 +29,18 @@ Token Lexer::TokenizeIdentifier() {
 
     first = true;
 
-    if(data == "def") return Token(TokenType::DEF, "", line, curr_col);
-    else if(data == "if") return Token(TokenType::IF, "", line, curr_col);
-    else if(data == "then") return Token(TokenType::THEN, "", line, curr_col);
-    else if(data == "else") return Token(TokenType::ELSE, "", line, curr_col);
-    else if(data == "for") return Token(TokenType::FOR, "", line, curr_col);
-    else if(data == "extern") return Token(TokenType::EXTERN, "", line, curr_col);
-    else return Token(TokenType::IDENTIFIER, data, line, curr_col);
+    if(data == "def") return Token(TokenType::DEF, "", curr_line, curr_col);
+    else if(data == "if") return Token(TokenType::IF, "", curr_line, curr_col);
+    else if(data == "then") return Token(TokenType::THEN, "", curr_line, curr_col);
+    else if(data == "else") return Token(TokenType::ELSE, "", curr_line, curr_col);
+    else if(data == "for") return Token(TokenType::FOR, "", curr_line, curr_col);
+    else if(data == "extern") return Token(TokenType::EXTERN, "", curr_line, curr_col);
+    else return Token(TokenType::IDENTIFIER, data, curr_line, curr_col);
 }
 
 Token Lexer::TokenizeNumber() {
     std::string data;
+    unsigned int curr_line = line;
     unsigned int curr_col = col;
 
     while(std::isdigit(c) || c == '.') {
@@ -48,7 +50,7 @@ Token Lexer::TokenizeNumber() {
 
     first = true;
 
-    return Token(TokenType::NUMBER, data, line, curr_col);
+    return Token(TokenType::NUMBER, data, curr_line, curr_col);
 }
 
 Token Lexer::NextToken() {
