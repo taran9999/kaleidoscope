@@ -8,6 +8,11 @@ Token::Token(TokenType type, std::string data, unsigned int line, unsigned int c
 std::string Token::to_string() {
     std::string s;
 
+    s += std::to_string(line);
+    s += ":";
+    s += std::to_string(col);
+    s += '\t';
+
     s += string_of_token_type(type);
 
     if(!data.empty()) {
