@@ -20,6 +20,8 @@
     X(LPAR) \
     X(RPAR) \
     X(SEMICOLON) \
+    X(END) \
+    X(ARROW) \
     X(END_PROG)
 
 #define X(name) name,

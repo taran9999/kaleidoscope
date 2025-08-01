@@ -35,6 +35,7 @@ Token Lexer::TokenizeIdentifier() {
     else if(data == "else") return Token(TokenType::ELSE, "", curr_line, curr_col);
     else if(data == "for") return Token(TokenType::FOR, "", curr_line, curr_col);
     else if(data == "extern") return Token(TokenType::EXTERN, "", curr_line, curr_col);
+    else if(data == "end") return Token(TokenType::END, "", curr_line, curr_col);
     else return Token(TokenType::IDENTIFIER, data, curr_line, curr_col);
 }
 
@@ -63,7 +64,6 @@ Token Lexer::NextToken() {
     else if(std::isdigit(c)) return TokenizeNumber();
 
     else if(c == '+') return Token(TokenType::PLUS, "", line, col);
-    else if(c == '-') return Token(TokenType::MINUS, "", line, col);
 
     else if(c == '(') return Token(TokenType::LPAR, "", line, col);
     else if(c == ')') return Token(TokenType::RPAR, "", line, col);
@@ -83,6 +83,14 @@ Token Lexer::NextToken() {
             return Token(TokenType::GE, "", line, col);
         }
         else return Token(TokenType::GT, "", line, col);
+    }
+
+    else if(c == '-') {
+        if(f.peek() == '>') {
+            NextChar();
+            return Token(TokenType::ARROW, "", line, col);
+        }
+        else return Token(TokenType::MINUS, "", line, col);
     }
 
     else return NextToken();
