@@ -20,7 +20,7 @@
     X(LPAR) \
     X(RPAR) \
     X(SEMICOLON) \
-    X(END)
+    X(END_PROG)
 
 #define X(name) name,
 enum class TokenType {

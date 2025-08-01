@@ -54,7 +54,7 @@ Token Lexer::TokenizeNumber() {
 }
 
 Token Lexer::NextToken() {
-    if(c == EOF) return Token(TokenType::END, "", line, col);
+    if(c == EOF) return Token(TokenType::END_PROG, "", line, col);
 
     if(!first) NextChar();
     else first = false;
