@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
     std::vector<Token> tokens;
     Lexer lexer(f);
     Token token = lexer.NextToken();
-    while(token.type != TokenType::END) {
+    while(token.type != TokenType::END_PROG) {
         std::cout << token.to_string() << "\n";
         token = lexer.NextToken();
     }
