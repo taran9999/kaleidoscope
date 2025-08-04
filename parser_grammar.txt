@@ -1,0 +1,12 @@
+program = func_def*
+func_def = DEF IDENTIFIER param_list ARROW block END
+param_list = IDENTIFIER*
+block = expr*
+
+expr = expr2 | if_expr
+expr2 = expr1 (LT expr1)*
+expr1 = expr0 (MINUS expr0)*
+expr0 = NUMBER | IDENTIFIER
+
+if_expr = IF expr THEN expr ELSE expr END
+
