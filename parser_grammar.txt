@@ -3,10 +3,12 @@ func_def = DEF IDENTIFIER param_list ARROW block END
 param_list = IDENTIFIER*
 block = expr*
 
+var_expr = IDENTIFIER
+num_literal = NUMBER
+
 expr = expr2 | if_expr
 expr2 = expr1 (LT expr1)*
 expr1 = expr0 (MINUS expr0)*
-expr0 = NUMBER | IDENTIFIER
+expr0 = num_literal | var_expr
 
-if_expr = IF expr THEN expr ELSE expr END
-
+if_expr = IF expr THEN block ELSE block END
