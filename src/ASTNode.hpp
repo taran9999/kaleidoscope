@@ -21,6 +21,13 @@ public:
 class Visitor {
     virtual ~Visitor() = default;
     virtual void visit(Program& node) = 0;
+    virtual void visit(FuncDef& node) = 0;
+    virtual void visit(Block& node) = 0;
+    virtual void visit(Expr& node) = 0;
+    virtual void visit(VarExpr& node) = 0;
+    virtual void visit(NumLiteral& node) = 0;
+    virtual void visit(BinOp& node) = 0;
+    virtual void visit(IfExpr& node) = 0;
 };
 
 class Program : ASTNode {
