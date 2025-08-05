@@ -1,8 +1,16 @@
-#include "Visitor.hpp"
-
 #include <vector>
 #include <memory>
 #include <string>
+
+class Visitor;
+class Program;
+class FuncDef;
+class Block;
+class Expr;
+class VarExpr;
+class NumLiteral;
+class BinOp;
+class IfExpr;
 
 class ASTNode {
 public:
@@ -10,10 +18,10 @@ public:
     virtual void accept(Visitor& v) = 0;
 };
 
-class Expr;
-class FuncDef;
-class VarExpr;
-class Block;
+class Visitor {
+    virtual ~Visitor() = default;
+    virtual void visit(Program& node) = 0;
+};
 
 class Program : ASTNode {
 public:
