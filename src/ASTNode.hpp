@@ -19,6 +19,7 @@ public:
 };
 
 class Visitor {
+public:
     virtual ~Visitor() = default;
     virtual void visit(Program& node) = 0;
     virtual void visit(FuncDef& node) = 0;
@@ -30,7 +31,15 @@ class Visitor {
     virtual void visit(IfExpr& node) = 0;
 };
 
-class Program : ASTNode {
+template<typename Derived>
+class Visitable : public ASTNode {
+public:
+    void accept(Visitor& v) override {
+        v.visit(static_cast<Derived&>(*this));
+    }
+};
+
+class Program : public Visitable<Program> {
 public:
     std::vector<std::unique_ptr<FuncDef>> func_defs;
 
@@ -40,7 +49,7 @@ public:
     void accept(Visitor& v) override;
 };
 
-class FuncDef : ASTNode {
+class FuncDef : public Visitable<FuncDef>{
 public:
     std::string name;
     std::vector<std::unique_ptr<VarExpr>> params;
@@ -54,7 +63,7 @@ public:
     void accept(Visitor& v) override;
 };
 
-class Block : ASTNode {
+class Block : public Visitable<Block> {
 public:
     std::vector<std::unique_ptr<Expr>> exprs;
 
@@ -64,7 +73,7 @@ public:
     void accept(Visitor& v) override;
 };
 
-class Expr : ASTNode {};
+class Expr : public ASTNode {};
 
 class VarExpr : Expr {
 public:
@@ -76,7 +85,7 @@ public:
     void accept(Visitor& v) override;
 };
 
-class NumLiteral : Expr {
+class NumLiteral : public Expr, public Visitable<NumLiteral> {
 public:
     int val;
 
@@ -86,7 +95,7 @@ public:
     void accept(Visitor& v) override;
 };
 
-class BinOp : Expr {
+class BinOp : public Expr, public Visitable<BinOp> {
     std::unique_ptr<Expr> left;
     char op;  // maybe make an enum of ops
     std::unique_ptr<Expr> right;
@@ -99,7 +108,7 @@ class BinOp : Expr {
     void accept(Visitor &v) override;
 };
 
-class IfExpr : Expr {
+class IfExpr : public Expr, public Visitable<IfExpr> {
     std::unique_ptr<Expr> cond;
     std::unique_ptr<Block> then;
     std::unique_ptr<Block> elss;
