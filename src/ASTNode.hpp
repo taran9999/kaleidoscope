@@ -75,7 +75,7 @@ public:
 
 class Expr : public ASTNode {};
 
-class VarExpr : Expr {
+class VarExpr : public Expr, public Visitable<VarExpr> {
 public:
     std::string name;
 
