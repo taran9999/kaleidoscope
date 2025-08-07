@@ -14,10 +14,11 @@ private:
 
     // utility functions
     Token current();
-    Token lookahead(int ofs = 1);
+    Token lookahead(std::size_t ofs = 1);
     Token accept(TokenType expected);
 
     bool check(TokenType expected);
+    bool at_end();
 
     void advance();
     void error(TokenType expected);
