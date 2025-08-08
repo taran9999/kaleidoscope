@@ -96,6 +96,7 @@ public:
 };
 
 class BinOp : public Expr, public Visitable<BinOp> {
+public:
     std::unique_ptr<Expr> left;
     char op;  // maybe make an enum of ops
     std::unique_ptr<Expr> right;
@@ -109,6 +110,7 @@ class BinOp : public Expr, public Visitable<BinOp> {
 };
 
 class IfExpr : public Expr, public Visitable<IfExpr> {
+public:
     std::unique_ptr<Expr> cond;
     std::unique_ptr<Block> then;
     std::unique_ptr<Block> elss;
