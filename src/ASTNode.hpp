@@ -52,11 +52,11 @@ public:
 class FuncDef : public Visitable<FuncDef>{
 public:
     std::string name;
-    std::vector<std::unique_ptr<VarExpr>> params;
+    std::vector<std::string> params;
     std::unique_ptr<Block> block;
 
     FuncDef(std::string name,
-            std::vector<std::unique_ptr<VarExpr>> params,
+            std::vector<std::string> params,
             std::unique_ptr<Block> block)
         : name(std::move(name)), params(std::move(params)), block(std::move(block)) {}
 
