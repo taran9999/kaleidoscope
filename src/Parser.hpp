@@ -18,6 +18,7 @@ private:
     Token accept(TokenType expected);
 
     bool check(TokenType expected);
+    bool checkExpr();
     bool at_end();
 
     void advance();
@@ -26,10 +27,14 @@ private:
     std::unique_ptr<Program> parseProgram();
     std::unique_ptr<FuncDef> parseFuncDef();
     std::unique_ptr<Block> parseBlock();
+
     std::unique_ptr<Expr> parseExpr();
+    std::unique_ptr<Expr> parseExpr0();
+    std::unique_ptr<Expr> parseExpr1();
+    std::unique_ptr<Expr> parseExpr2();
+
     std::unique_ptr<VarExpr> parseVarExpr();
     std::unique_ptr<NumLiteral> parseNumLiteral();
-    std::unique_ptr<BinOp> parseBinOp();
     std::unique_ptr<IfExpr> parseIfExpr();
 
 public:
