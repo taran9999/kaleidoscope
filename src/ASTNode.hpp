@@ -14,7 +14,7 @@ class IfExpr;
 
 class ASTNode {
 public:
-    virtual ~ASTNode() = default;
+    virtual ~ASTNode();
     virtual void accept(Visitor& v) = 0;
 };
 
@@ -45,8 +45,6 @@ public:
 
     explicit Program(std::vector<std::unique_ptr<FuncDef>> func_defs)
         : func_defs(std::move(func_defs)) {}
-
-    void accept(Visitor& v) override;
 };
 
 class FuncDef : public Visitable<FuncDef>{
@@ -59,8 +57,6 @@ public:
             std::vector<std::string> params,
             std::unique_ptr<Block> block)
         : name(std::move(name)), params(std::move(params)), block(std::move(block)) {}
-
-    void accept(Visitor& v) override;
 };
 
 class Block : public Visitable<Block> {
@@ -69,11 +65,9 @@ public:
 
     explicit Block(std::vector<std::unique_ptr<Expr>> exprs)
         : exprs(std::move(exprs)) {}
-
-    void accept(Visitor& v) override;
 };
 
-class Expr : public ASTNode {};
+class Expr : public Visitable<Expr> {};
 
 class VarExpr : public Expr, public Visitable<VarExpr> {
 public:
@@ -81,8 +75,6 @@ public:
 
     explicit VarExpr(std::string name)
         : name(std::move(name)) {}
-
-    void accept(Visitor& v) override;
 };
 
 class NumLiteral : public Expr, public Visitable<NumLiteral> {
@@ -91,8 +83,6 @@ public:
 
     explicit NumLiteral(int val)
         : val(val) {}
-
-    void accept(Visitor& v) override;
 };
 
 class BinOp : public Expr, public Visitable<BinOp> {
@@ -105,8 +95,6 @@ public:
           char op,
           std::unique_ptr<Expr> right)
         : left(std::move(left)), op(op), right(std::move(right)) {}
-
-    void accept(Visitor &v) override;
 };
 
 class IfExpr : public Expr, public Visitable<IfExpr> {
@@ -119,6 +107,4 @@ public:
            std::unique_ptr<Block> then,
            std::unique_ptr<Block> elss)
         : cond(std::move(cond)), then(std::move(then)), elss(std::move(elss)) {}
-
-    void accept(Visitor& v) override;
 };
