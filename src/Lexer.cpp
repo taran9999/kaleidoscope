@@ -3,7 +3,9 @@
 #include <cctype>
 #include <string>
 
-Lexer::Lexer(std::ifstream& f) : f(f), line(1), col(0), first(false) {}
+Lexer::Lexer(std::ifstream& f) : f(f), line(1), col(0), first(true) {
+    c = f.get();
+}
 
 void Lexer::NextChar() {
     if(c == EOF) return;
@@ -27,7 +29,7 @@ Token Lexer::TokenizeIdentifier() {
         NextChar();
     }
 
-    first = true;
+    first = true;  // c has the first character of what should be part of the next token
 
     if(data == "def") return Token(TokenType::DEF, "", curr_line, curr_col);
     else if(data == "if") return Token(TokenType::IF, "", curr_line, curr_col);
