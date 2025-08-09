@@ -4,6 +4,7 @@
 
 #include "Lexer.hpp"
 #include "Token.hpp"
+#include "Parser.hpp"
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
@@ -25,4 +26,7 @@ int main(int argc, char* argv[]) {
         std::cout << token.to_string() << "\n";
         token = lexer.NextToken();
     }
+
+    Parser parser(std::move(tokens));
+    parser.Parse();
 }
