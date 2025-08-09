@@ -28,6 +28,7 @@ int main(int argc, char* argv[]) {
         token = lexer.NextToken();
         tokens.push_back(token);
     }
+    f.close();
 
     Parser parser(std::move(tokens));
     parser.Parse();
