@@ -108,13 +108,13 @@ std::unique_ptr<IfExpr> Parser::parseIfExpr() {
 }
 
 std::unique_ptr<VarExpr> Parser::parseVarExpr() {
-    Token curr = current();
+    Token curr = accept(TokenType::IDENTIFIER);
     auto name = curr.data;
     return std::make_unique<VarExpr>(std::move(name));
 }
 
 std::unique_ptr<NumLiteral> Parser::parseNumLiteral() {
-    Token curr = current();
+    Token curr = accept(TokenType::NUMBER);
     std::string data = curr.data;
     auto val = std::stoi(data);
     return std::make_unique<NumLiteral>(val);
