@@ -63,12 +63,12 @@ std::unique_ptr<Program> Parser::parseProgram() {
 std::unique_ptr<FuncDef> Parser::parseFuncDef() {
     accept(TokenType::DEF);
     Token nameToken = accept(TokenType::IDENTIFIER);
-    auto name = std::move(nameToken.data);
+    auto name = nameToken.data;
 
     std::vector<std::string> params;
     while(check(TokenType::IDENTIFIER)) {
         Token curr = current();
-        params.push_back(std::move(curr.data));
+        params.push_back(curr.data);
         advance();
     }
 
@@ -109,13 +109,13 @@ std::unique_ptr<IfExpr> Parser::parseIfExpr() {
 
 std::unique_ptr<VarExpr> Parser::parseVarExpr() {
     Token curr = current();
-    auto name = std::move(curr.data);
+    auto name = curr.data;
     return std::make_unique<VarExpr>(std::move(name));
 }
 
 std::unique_ptr<NumLiteral> Parser::parseNumLiteral() {
     Token curr = current();
-    std::string data = std::move(curr.data);
+    std::string data = curr.data;
     auto val = std::stoi(data);
     return std::make_unique<NumLiteral>(val);
 }
