@@ -45,7 +45,7 @@ void Parser::advance() {
 
 void Parser::error(TokenType expected) {
     Token curr = current();
-    std::cout << "Got " << string_of_token_type(curr.type) << " at " << curr.line << ":" << curr.col << " (expected " << string_of_token_type(expected) << ")" << std::endl;
+    std::cerr << "Got " << string_of_token_type(curr.type) << " at " << curr.line << ":" << curr.col << " (expected " << string_of_token_type(expected) << ")" << std::endl;
     num_errors++;
 }
 
