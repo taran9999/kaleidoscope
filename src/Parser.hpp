@@ -38,7 +38,7 @@ private:
     std::unique_ptr<IfExpr> parseIfExpr();
 
 public:
-    Parser(std::vector<Token> tokens)
+    explicit Parser(std::vector<Token> tokens)
         : tokens(std::move(tokens)), pos(0), end_token(Token(TokenType::END_PROG, "", 0, 0)), num_errors(0) {}
 
     std::unique_ptr<Program> Parse();

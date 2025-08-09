@@ -16,6 +16,6 @@ private:
     Token TokenizeNumber();
 
 public:
-    Lexer(std::ifstream& f);
+    explicit Lexer(std::ifstream& f);
     Token NextToken();
 };
