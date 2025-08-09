@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
     Token token = lexer.NextToken();
     tokens.push_back(token);
     while(token.type != TokenType::END_PROG) {
-        // std::cout << token.to_string() << "\n";
+        std::cout << token.to_string() << "\n";
         token = lexer.NextToken();
         tokens.push_back(token);
     }
