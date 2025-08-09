@@ -36,7 +36,7 @@ bool Parser::checkExpr() {
 }
 
 bool Parser::at_end() {
-    return pos >= tokens.size();
+    return pos >= tokens.size() - 1;
 }
 
 void Parser::advance() {
