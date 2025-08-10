@@ -1,3 +1,6 @@
+#ifndef ASTNODE_HPP
+#define ASTNODE_HPP
+
 #include <vector>
 #include <memory>
 #include <string>
@@ -24,7 +27,6 @@ public:
     virtual void visit(Program& node) = 0;
     virtual void visit(FuncDef& node) = 0;
     virtual void visit(Block& node) = 0;
-    virtual void visit(Expr& node) = 0;
     virtual void visit(VarExpr& node) = 0;
     virtual void visit(NumLiteral& node) = 0;
     virtual void visit(BinOp& node) = 0;
@@ -67,7 +69,7 @@ public:
         : exprs(std::move(exprs)) {}
 };
 
-class Expr : public Visitable<Expr> {};
+class Expr : public ASTNode {};
 
 class VarExpr : public Expr, public Visitable<VarExpr> {
 public:
@@ -75,6 +77,11 @@ public:
 
     explicit VarExpr(std::string name)
         : name(std::move(name)) {}
+
+    // Expr still has the purely virtual accept method from ASTNode. We want the one that Visitable overrides.
+    void accept(Visitor& v) override {
+        Visitable<VarExpr>::accept(v);
+    }
 };
 
 class NumLiteral : public Expr, public Visitable<NumLiteral> {
@@ -83,6 +90,10 @@ public:
 
     explicit NumLiteral(int val)
         : val(val) {}
+
+    void accept(Visitor& v) override {
+        Visitable<NumLiteral>::accept(v);
+    }
 };
 
 class BinOp : public Expr, public Visitable<BinOp> {
@@ -95,6 +106,10 @@ public:
           char op,
           std::unique_ptr<Expr> right)
         : left(std::move(left)), op(op), right(std::move(right)) {}
+
+    void accept(Visitor& v) override {
+        Visitable<BinOp>::accept(v);
+    }
 };
 
 class IfExpr : public Expr, public Visitable<IfExpr> {
@@ -107,4 +122,10 @@ public:
            std::unique_ptr<Block> then,
            std::unique_ptr<Block> elss)
         : cond(std::move(cond)), then(std::move(then)), elss(std::move(elss)) {}
+
+    void accept(Visitor& v) override {
+        Visitable<IfExpr>::accept(v);
+    }
 };
+
+#endif
