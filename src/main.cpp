@@ -5,6 +5,7 @@
 #include "Lexer.hpp"
 #include "Token.hpp"
 #include "Parser.hpp"
+#include "PrintVisitor.hpp"
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
@@ -31,5 +32,8 @@ int main(int argc, char* argv[]) {
     f.close();
 
     Parser parser(std::move(tokens));
-    parser.Parse();
+    auto root = parser.Parse();
+
+    PrintVisitor printer;
+    printer.visit(*root);
 }
