@@ -14,6 +14,7 @@ class VarExpr;
 class NumLiteral;
 class BinOp;
 class IfExpr;
+class CallExpr;
 
 class ASTNode {
 public:
@@ -31,6 +32,7 @@ public:
     virtual void visit(NumLiteral& node) = 0;
     virtual void visit(BinOp& node) = 0;
     virtual void visit(IfExpr& node) = 0;
+    virtual void visit(CallExpr& node) = 0;
 };
 
 template<typename Derived>
@@ -125,6 +127,20 @@ public:
 
     void accept(Visitor& v) override {
         Visitable<IfExpr>::accept(v);
+    }
+};
+
+class CallExpr : public Expr, public Visitable<CallExpr> {
+public:
+    std::string name;
+    std::vector<std::unique_ptr<Expr>> args;
+
+    CallExpr(std::string name,
+             std::vector<std::unique_ptr<Expr>> args)
+        : name(std::move(name)), args(std::move(args)) {}
+
+    void accept(Visitor& v) override {
+        Visitable<CallExpr>::accept(v);
     }
 };
 

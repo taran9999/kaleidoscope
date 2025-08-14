@@ -16,4 +16,5 @@ public:
     void visit(NumLiteral& node) override;
     void visit(BinOp& node) override;
     void visit(IfExpr& node) override;
+    void visit(CallExpr& node) override;
 };

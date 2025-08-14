@@ -49,6 +49,23 @@ void Parser::error(TokenType expected) {
     num_errors++;
 }
 
+void Parser::errorMultiple(std::vector<TokenType> expected) {
+    Token curr = current();
+    std::cerr << "Got " << string_of_token_type(curr.type) << " at " << curr.line << ":" << curr.col << " (expected ";
+
+    for(size_t i = 0; i < expected.size(); i++) {
+        if(i > 0) std::cerr << ", ";
+        std::cerr << string_of_token_type(expected[i]);
+    }
+    std::cerr << std::endl;
+    num_errors++;
+}
+
+void Parser::endProgError() {
+    std::cerr << "Reached end of file while parsing" << std::endl;
+    num_errors++;
+}
+
 std::unique_ptr<Program> Parser::parseProgram() {
     std::vector<std::unique_ptr<FuncDef>> functions;
 
@@ -113,6 +130,27 @@ std::unique_ptr<VarExpr> Parser::parseVarExpr() {
     return std::make_unique<VarExpr>(std::move(name));
 }
 
+std::unique_ptr<CallExpr> Parser::parseCallExpr() {
+    std::vector<std::unique_ptr<Expr>> args;
+
+    Token name_tok = accept(TokenType::IDENTIFIER);
+    auto name = name_tok.data;
+
+    accept(TokenType::LPAR);
+    while(!check(TokenType::RPAR)) {
+        if(current().type == TokenType::END_PROG) {
+            endProgError();
+            break;
+        }
+
+        auto arg = parseExpr();
+        args.push_back(std::move(arg));
+    }
+    accept(TokenType::RPAR);
+
+    return std::make_unique<CallExpr>(std::move(name), std::move(args));
+}
+
 std::unique_ptr<NumLiteral> Parser::parseNumLiteral() {
     Token curr = accept(TokenType::NUMBER);
     std::string data = curr.data;
@@ -146,7 +184,13 @@ std::unique_ptr<Expr> Parser::parseExpr1() {
 
 std::unique_ptr<Expr> Parser::parseExpr0() {
     if(check(TokenType::NUMBER)) return parseNumLiteral();
-    else return parseVarExpr();
+    else if(check(TokenType::IDENTIFIER)) {
+        if(lookahead(1).type == TokenType::LPAR) return parseCallExpr();
+        else return parseVarExpr();
+    }
+
+    errorMultiple({TokenType::IF, TokenType::IDENTIFIER, TokenType::NUMBER});
+    return std::make_unique<VarExpr>("err");  // dummy error token just to continue parsing
 }
 
 std::unique_ptr<Program> Parser::Parse() {

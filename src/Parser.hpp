@@ -23,6 +23,8 @@ private:
 
     void advance();
     void error(TokenType expected);
+    void errorMultiple(std::vector<TokenType> expected);
+    void endProgError();
 
     std::unique_ptr<Program> parseProgram();
     std::unique_ptr<FuncDef> parseFuncDef();
@@ -34,6 +36,7 @@ private:
     std::unique_ptr<Expr> parseExpr2();
 
     std::unique_ptr<VarExpr> parseVarExpr();
+    std::unique_ptr<CallExpr> parseCallExpr();
     std::unique_ptr<NumLiteral> parseNumLiteral();
     std::unique_ptr<IfExpr> parseIfExpr();
 

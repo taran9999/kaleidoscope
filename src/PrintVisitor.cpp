@@ -2,6 +2,7 @@
 #include <string>
 
 #include "PrintVisitor.hpp"
+#include "ASTNode.hpp"
 
 void PrintVisitor::visit(Program& node) {
     std::cout << "Program\n";
@@ -83,6 +84,17 @@ void PrintVisitor::visit(IfExpr& node) {
     node.elss->accept(*this);
 
     indent_level = curr_indent;
+}
+
+void PrintVisitor::visit(CallExpr& node) {
+    unsigned int curr_indent = indent_level;
+    print_indent(indent_level);
+    std::cout << "Call " << node.name << "\n";
+
+    for(const auto& arg : node.args) {
+        indent_level = curr_indent + 1;
+        arg->accept(*this);
+    }
 }
 
 void PrintVisitor::print_indent(unsigned int level) {
