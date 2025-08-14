@@ -173,10 +173,19 @@ std::unique_ptr<Expr> Parser::parseExpr2() {
 std::unique_ptr<Expr> Parser::parseExpr1() {
     auto lhs = parseExpr0();
 
-    while(check(TokenType::MINUS)) {
-        accept(TokenType::MINUS);
-        auto rhs = parseExpr0();
-        lhs = std::make_unique<BinOp>(std::move(lhs), '-', std::move(rhs));
+    while(check(TokenType::MINUS) || check(TokenType::PLUS)) {
+        if(check(TokenType::MINUS)) {
+            advance();
+            auto rhs = parseExpr0();
+            lhs = std::make_unique<BinOp>(std::move(lhs), '-', std::move(rhs));
+        } else if(check(TokenType::PLUS)) {
+            advance();
+            auto rhs = parseExpr0();
+            lhs = std::make_unique<BinOp>(std::move(lhs), '+', std::move(rhs));
+        } else {
+            // shouldn't happen
+            errorMultiple({TokenType::MINUS, TokenType::PLUS});
+        }
     }
 
     return lhs;
@@ -190,7 +199,7 @@ std::unique_ptr<Expr> Parser::parseExpr0() {
     }
 
     errorMultiple({TokenType::IF, TokenType::IDENTIFIER, TokenType::NUMBER});
-    return std::make_unique<VarExpr>("err");  // dummy error token just to continue parsing
+    return std::make_unique<VarExpr>("err");
 }
 
 std::unique_ptr<Program> Parser::Parse() {
