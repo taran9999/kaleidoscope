@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Parser.hpp"
+#include "ASTNode.hpp"
 #include "Token.hpp"
 
 Token Parser::current() {
@@ -202,6 +203,10 @@ std::unique_ptr<Expr> Parser::parseExpr0() {
     return std::make_unique<VarExpr>("err");
 }
 
-std::unique_ptr<Program> Parser::Parse() {
-    return parseProgram();
+std::unique_ptr<ASTNode> Parser::Parse(bool toplevel) {
+    if (!toplevel) return parseProgram();
+
+    if(check(TokenType::DEF)) return parseFuncDef();
+    else if(checkExpr()) return parseExpr();
+    else return nullptr;
 }

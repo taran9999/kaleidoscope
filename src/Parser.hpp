@@ -44,5 +44,5 @@ public:
     explicit Parser(std::vector<Token> tokens)
         : tokens(std::move(tokens)), pos(0), end_token(Token(TokenType::END_PROG, "", 0, 0)), num_errors(0) {}
 
-    std::unique_ptr<Program> Parse();
+    std::unique_ptr<ASTNode> Parse(bool toplevel = false);
 };
