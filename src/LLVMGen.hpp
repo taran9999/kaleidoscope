@@ -8,7 +8,7 @@
 
 #include "ASTNode.hpp"
 
-class LLVMGen : Visitor {
+class LLVMGen : public Visitor {
 private:
     llvm::Value* res;
 
@@ -34,4 +34,6 @@ public:
     void visit(BinOp& node) override;
     void visit(IfExpr& node) override;
     void visit(CallExpr& node) override;
+
+    void PrintRes();
 };

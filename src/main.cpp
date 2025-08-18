@@ -1,5 +1,8 @@
 #include <iostream>
 #include <fstream>
+#include <memory>
+#include <sstream>
+#include <string>
 #include <vector>
 
 #include "Lexer.hpp"
@@ -10,8 +13,37 @@
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
-        std::cout << "Input file required" << std::endl;
-        return 1;
+        // Top level
+        std::string line;
+        LLVMGen gen;
+
+        std::cout << "> ";
+        while(std::getline(std::cin, line)) {
+            std::istringstream iss(line);
+            Lexer lexer(iss);
+            std::vector<Token> tokens;
+            Token token = lexer.NextToken();
+            tokens.push_back(token);
+            while(token.type != TokenType::END_PROG) {
+                token = lexer.NextToken();
+                tokens.push_back(token);
+            }
+
+            Parser parser(std::move(tokens));
+            auto root = parser.Parse(true);
+            if(!root) {
+                std::cerr << "parsing error" << std::endl;
+                return 1;
+            }
+
+            root->accept(gen);
+            gen.PrintRes();
+
+            std::cout << "> ";
+        }
+
+        gen.mod->print(llvm::outs(), nullptr);
+        return 0;
     }
 
     std::ifstream f;
@@ -39,7 +71,8 @@ int main(int argc, char* argv[]) {
     // printer.visit(*root);
 
     LLVMGen gen;
-    gen.visit(*root);
+    // gen.visit(*root);
+    root->accept(gen);
     gen.mod->print(llvm::outs(), nullptr);
 }
 

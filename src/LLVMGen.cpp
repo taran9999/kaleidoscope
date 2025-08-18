@@ -186,3 +186,12 @@ void LLVMGen::visit(CallExpr& node) {
 void LLVMGen::error(std::string message) {
     std::cerr << "LLVMGen: " << message << std::endl;
 }
+
+void LLVMGen::PrintRes() {
+    if(!res) {
+        std::cout << "current res is null" << std::endl;
+        return;
+    }
+
+    res->print(llvm::outs());
+}
