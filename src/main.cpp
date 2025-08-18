@@ -6,42 +6,47 @@
 #include "Token.hpp"
 #include "Parser.hpp"
 #include "PrintVisitor.hpp"
+#include "LLVMGen.hpp"
 
-// int main(int argc, char* argv[]) {
-//     if(argc < 2) {
-//         std::cout << "Input file required" << std::endl;
-//         return 1;
-//     }
-//
-//     std::ifstream f;
-//     f.open(argv[1]);
-//     if(!f.is_open()) {
-//         std::cout << "Unable to open file: " << argv[1] << std::endl;
-//         return 1;
-//     }
-//
-//     std::vector<Token> tokens;
-//     Lexer lexer(f);
-//     Token token = lexer.NextToken();
-//     tokens.push_back(token);
-//     while(token.type != TokenType::END_PROG) {
-//         std::cout << token.to_string() << "\n";
-//         token = lexer.NextToken();
-//         tokens.push_back(token);
-//     }
-//     f.close();
-//
-//     Parser parser(std::move(tokens));
-//     auto root = parser.Parse();
-//
-//     PrintVisitor printer;
-//     printer.visit(*root);
-// }
+int main(int argc, char* argv[]) {
+    if(argc < 2) {
+        std::cout << "Input file required" << std::endl;
+        return 1;
+    }
 
-// test mlir
-#include "mlirtest.cpp"
-int main() {
-    MLIRTest m;
-    m.gen42();
-    m.dump();
+    std::ifstream f;
+    f.open(argv[1]);
+    if(!f.is_open()) {
+        std::cout << "Unable to open file: " << argv[1] << std::endl;
+        return 1;
+    }
+
+    std::vector<Token> tokens;
+    Lexer lexer(f);
+    Token token = lexer.NextToken();
+    tokens.push_back(token);
+    while(token.type != TokenType::END_PROG) {
+        // std::cout << token.to_string() << "\n";
+        token = lexer.NextToken();
+        tokens.push_back(token);
+    }
+    f.close();
+
+    Parser parser(std::move(tokens));
+    auto root = parser.Parse();
+
+    // PrintVisitor printer;
+    // printer.visit(*root);
+
+    LLVMGen gen;
+    gen.visit(*root);
+    gen.mod->print(llvm::outs(), nullptr);
 }
+
+// // test mlir
+// #include "mlirtest.cpp"
+// int main() {
+//     MLIRTest m;
+//     m.gen42();
+//     m.dump();
+// }

@@ -22,6 +22,8 @@ file(GLOB SRC_FILES src/*.cpp)
 
 add_executable(main ${SRC_FILES})
 
+llvm_map_components_to_libnames(llvm_libs support core irreader)
+
 target_link_libraries(main
     PRIVATE
     MLIRSupport
@@ -30,5 +32,6 @@ target_link_libraries(main
     MLIRArithDialect
     MLIRFuncDialect
 
+    ${llvm_libs}
     LLVMSupport
 )
