@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "Parser.hpp"
@@ -207,6 +208,19 @@ std::unique_ptr<ASTNode> Parser::Parse(bool toplevel) {
     if (!toplevel) return parseProgram();
 
     if(check(TokenType::DEF)) return parseFuncDef();
-    else if(checkExpr()) return parseExpr();
+    else if(checkExpr()) {
+        // make anonymous funcdef from toplevel expr
+        auto e = parseExpr();
+        std::vector<std::unique_ptr<Expr>> es;
+        std::vector<std::string> p;
+        es.push_back(std::move(e));
+        auto b = std::make_unique<Block>(std::move(es));
+
+        return std::make_unique<FuncDef>("_expr", std::move(p), std::move(b));
+    }
     else return nullptr;
+}
+
+int Parser::Errors() {
+    return num_errors;
 }

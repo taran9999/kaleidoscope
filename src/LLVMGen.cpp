@@ -194,4 +194,5 @@ void LLVMGen::PrintRes() {
     }
 
     res->print(llvm::outs());
+    std::cout << std::endl;
 }
