@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 
             Parser parser(std::move(tokens));
             auto root = parser.Parse(true);
-            if(!root) {
+            if(!root || parser.Errors()) {
                 std::cerr << "parsing error" << std::endl;
                 return 1;
             }
@@ -66,6 +66,10 @@ int main(int argc, char* argv[]) {
 
     Parser parser(std::move(tokens));
     auto root = parser.Parse();
+    if(parser.Errors()) {
+        std::cerr << "parsing failed: " << parser.Errors() << " errors" << std::endl;
+        return 1;
+    }
 
     // PrintVisitor printer;
     // printer.visit(*root);
