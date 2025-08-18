@@ -6,6 +6,7 @@
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
+#include <llvm/IR/Instructions.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Verifier.h>
 #include <vector>
@@ -74,7 +75,7 @@ void LLVMGen::visit(VarExpr& node) {
 
 // TODO: maybe change AST node from int val to float val
 void LLVMGen::visit(NumLiteral& node) {
-    res = llvm::ConstantFP::get(*ctx, llvm::APFloat(float(node.val)));
+    res = llvm::ConstantFP::get(*ctx, llvm::APFloat(double(node.val)));
 }
 
 void LLVMGen::visit(BinOp& node) {
@@ -111,8 +112,48 @@ void LLVMGen::visit(BinOp& node) {
 }
 
 void LLVMGen::visit(IfExpr& node) {
-    error("IfExpr gen not yet implemented");
-    res = nullptr;
+    node.cond->accept(*this);
+    if(!res) {
+        error("failed to generate code for if condition");
+        return;
+    }
+    llvm::Value* cond = builder->CreateFCmpONE(res, llvm::ConstantFP::get(*ctx, llvm::APFloat(0.0)), "cond");
+
+    llvm::Function* currFunc = builder->GetInsertBlock()->getParent();
+    llvm::BasicBlock* then = llvm::BasicBlock::Create(*ctx, "then");
+    llvm::BasicBlock* elss = llvm::BasicBlock::Create(*ctx, "else");
+    llvm::BasicBlock* merge = llvm::BasicBlock::Create(*ctx, "merge");
+    builder->CreateCondBr(cond, then, elss);
+
+    currFunc->insert(currFunc->end(), then);
+    builder->SetInsertPoint(then);
+    node.then->accept(*this);
+    if(!res) {
+        error("failed to generate code for then block of if condition");
+        return;
+    }
+    llvm::Value* thenVal = res;
+    builder->CreateBr(merge);
+    then = builder->GetInsertBlock();
+
+    currFunc->insert(currFunc->end(), elss);
+    builder->SetInsertPoint(elss);
+    node.elss->accept(*this);
+    if(!res) {
+        error("failed to generate code for else block of if condition");
+        return;
+    }
+    llvm::Value* elseVal = res;
+    builder->CreateBr(merge);
+    elss = builder->GetInsertBlock();
+
+    currFunc->insert(currFunc->end(), merge);
+    builder->SetInsertPoint(merge);
+    llvm::PHINode* phi = builder->CreatePHI(llvm::Type::getDoubleTy(*ctx), 2, "phi");
+    phi->addIncoming(thenVal, then);
+    phi->addIncoming(elseVal, elss);
+
+    res = phi;
 }
 
 void LLVMGen::visit(CallExpr& node) {
