@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Token.hpp"
-#include <fstream>
+#include <istream>
 
 class Lexer {
 private:
     char c;
-    std::ifstream& f;
+    std::istream& f;
     unsigned int line;
     unsigned int col;
     bool first;
@@ -16,6 +16,6 @@ private:
     Token TokenizeNumber();
 
 public:
-    explicit Lexer(std::ifstream& f);
+    explicit Lexer(std::istream& f);
     Token NextToken();
 };
