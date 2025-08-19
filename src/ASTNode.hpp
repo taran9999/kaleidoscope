@@ -152,12 +152,14 @@ public:
     std::unique_ptr<Expr> rangeStart;
     std::unique_ptr<Expr> rangeEnd;
     std::unique_ptr<Expr> step;
+    std::unique_ptr<Block> block;
 
     LoopExpr(std::string name,
              std::unique_ptr<Expr> rangeStart,
              std::unique_ptr<Expr> rangeEnd,
-             std::unique_ptr<Expr> step)
-        : name(std::move(name)), rangeStart(std::move(rangeStart)), rangeEnd(std::move(rangeEnd)), step(std::move(step)) {}
+             std::unique_ptr<Expr> step,
+             std::unique_ptr<Block> block)
+        : name(std::move(name)), rangeStart(std::move(rangeStart)), rangeEnd(std::move(rangeEnd)), step(std::move(step)), block(std::move(block)) {}
 
     void accept(Visitor& v) override {
         Visitable<LoopExpr>::accept(v);
