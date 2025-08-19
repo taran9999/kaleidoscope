@@ -151,7 +151,6 @@ public:
     std::string name;
     std::unique_ptr<Expr> rangeStart;
     std::unique_ptr<Expr> rangeEnd;
-    std::unique_ptr<Expr> cond;
     std::unique_ptr<Expr> step;
 
     LoopExpr(std::string name,
