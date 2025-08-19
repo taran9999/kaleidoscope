@@ -157,9 +157,8 @@ public:
     LoopExpr(std::string name,
              std::unique_ptr<Expr> rangeStart,
              std::unique_ptr<Expr> rangeEnd,
-             std::unique_ptr<Expr> cond,
              std::unique_ptr<Expr> step)
-        : name(std::move(name)), rangeStart(std::move(rangeStart)), rangeEnd(std::move(rangeEnd)), cond(std::move(cond)), step(std::move(step)) {}
+        : name(std::move(name)), rangeStart(std::move(rangeStart)), rangeEnd(std::move(rangeEnd)), step(std::move(step)) {}
 
     void accept(Visitor& v) override {
         Visitable<LoopExpr>::accept(v);
