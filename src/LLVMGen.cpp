@@ -8,6 +8,7 @@
 #include <llvm/IR/Function.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Type.h>
+#include <llvm/IR/Value.h>
 #include <llvm/IR/Verifier.h>
 #include <vector>
 
@@ -35,7 +36,7 @@ void LLVMGen::visit(FuncDef& node) {
     size_t i = 0;
     for(auto& arg : f->args()) arg.setName(node.params[i++]);
 
-    llvm::BasicBlock *bb = llvm::BasicBlock::Create(*ctx, "entry", f);
+    llvm::BasicBlock* bb = llvm::BasicBlock::Create(*ctx, "entry", f);
     builder->SetInsertPoint(bb);
 
     env.clear();
@@ -184,8 +185,59 @@ void LLVMGen::visit(CallExpr& node) {
 }
 
 void LLVMGen::visit(LoopExpr& node) {
-    error("LoopExpr codegen not yet implemented");
-    res = nullptr;
+    node.rangeStart->accept(*this);
+    if(!res) {
+        error("failed to generate code of loop start val");
+        return;
+    }
+    llvm::Value* start = res;
+
+    node.rangeEnd->accept(*this);
+    if(!res) {
+        error("failed to generate code of loop end val");
+        return;
+    }
+    llvm::Value* end = res;
+
+    auto* currFunc = builder->GetInsertBlock()->getParent();
+    auto* preLoopBlock = builder->GetInsertBlock();
+    llvm::BasicBlock* loopBlock = llvm::BasicBlock::Create(*ctx, "loop", currFunc);
+    builder->CreateBr(loopBlock);
+
+    builder->SetInsertPoint(loopBlock);
+    llvm::PHINode* loopVar = builder->CreatePHI(llvm::Type::getDoubleTy(*ctx), 2, node.name);
+    loopVar->addIncoming(start, preLoopBlock);
+
+    // loop var shadows and then restores original value
+    llvm::Value* oldVarVal = env[node.name];
+    env[node.name] = loopVar;
+
+    node.block->accept(*this);
+    if(!res) {
+        error("failed to generate body of loop");
+        return;
+    }
+
+    node.step->accept(*this);
+    if(!res) {
+        error("failed to generate code of loop step val");
+        return;
+    }
+    llvm::Value* step = res;
+
+    llvm::Value* nextVar = builder->CreateFAdd(loopVar, step, "nextLoopVar");
+    llvm::Value* endCond = builder->CreateFCmpONE(nextVar, end, "loopEndCond");
+
+    auto* loopEnd = builder->GetInsertBlock();
+    llvm::BasicBlock* postLoopBlock = llvm::BasicBlock::Create(*ctx, "endLoop", currFunc);
+    builder->CreateCondBr(endCond, loopBlock, postLoopBlock);
+    builder->SetInsertPoint(postLoopBlock);
+    loopVar->addIncoming(nextVar, loopEnd);
+
+    if(oldVarVal) env[node.name] = oldVarVal;
+    else env.erase(node.name);
+
+    res = llvm::Constant::getNullValue(llvm::Type::getDoubleTy(*ctx));
 }
 
 void LLVMGen::error(std::string message) {
