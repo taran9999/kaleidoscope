@@ -183,6 +183,11 @@ void LLVMGen::visit(CallExpr& node) {
     res = builder->CreateCall(func, argValues, "call_" + node.name);
 }
 
+void LLVMGen::visit(LoopExpr& node) {
+    error("LoopExpr codegen not yet implemented");
+    res = nullptr;
+}
+
 void LLVMGen::error(std::string message) {
     std::cerr << "LLVMGen: " << message << std::endl;
 }

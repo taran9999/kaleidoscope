@@ -39,6 +39,7 @@ private:
     std::unique_ptr<CallExpr> parseCallExpr();
     std::unique_ptr<NumLiteral> parseNumLiteral();
     std::unique_ptr<IfExpr> parseIfExpr();
+    std::unique_ptr<LoopExpr> parseLoopExpr();
 
 public:
     explicit Parser(std::vector<Token> tokens)

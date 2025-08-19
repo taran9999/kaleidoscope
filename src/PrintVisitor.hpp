@@ -1,6 +1,6 @@
 #include "ASTNode.hpp"
 
-class PrintVisitor : Visitor {
+class PrintVisitor : public Visitor {
 private:
     unsigned int indent_level;
 
@@ -17,4 +17,5 @@ public:
     void visit(BinOp& node) override;
     void visit(IfExpr& node) override;
     void visit(CallExpr& node) override;
+    void visit(LoopExpr& node) override;
 };

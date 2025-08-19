@@ -34,6 +34,7 @@ public:
     void visit(BinOp& node) override;
     void visit(IfExpr& node) override;
     void visit(CallExpr& node) override;
+    void visit(LoopExpr& node) override;
 
     void PrintRes();
 };

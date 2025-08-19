@@ -34,7 +34,8 @@ bool Parser::checkExpr() {
     return
         check(TokenType::IF) ||
         check(TokenType::NUMBER) ||
-        check(TokenType::IDENTIFIER);
+        check(TokenType::IDENTIFIER) ||
+        check(TokenType::LOOP);
 }
 
 bool Parser::at_end() {
@@ -111,6 +112,7 @@ std::unique_ptr<Block> Parser::parseBlock() {
 
 std::unique_ptr<Expr> Parser::parseExpr() {
     if(check(TokenType::IF)) return parseIfExpr();
+    else if(check(TokenType::LOOP)) return parseLoopExpr();
     else return parseExpr2();
 }
 
@@ -158,6 +160,25 @@ std::unique_ptr<NumLiteral> Parser::parseNumLiteral() {
     std::string data = curr.data;
     auto val = std::stoi(data);
     return std::make_unique<NumLiteral>(val);
+}
+
+std::unique_ptr<LoopExpr> Parser::parseLoopExpr() {
+    accept(TokenType::LOOP);
+
+    Token nameToken = accept(TokenType::IDENTIFIER);
+    auto name = nameToken.data;
+
+    accept(TokenType::RANGE);
+    auto start = parseExpr();
+    accept(TokenType::COMMA);
+    auto end = parseExpr();
+    accept(TokenType::COMMA);
+    auto step = parseExpr();
+    accept(TokenType::ARROW);
+    auto block = parseBlock();
+    accept(TokenType::END);
+
+    return std::make_unique<LoopExpr>(std::move(name), std::move(start), std::move(end), std::move(step), std::move(block));
 }
 
 std::unique_ptr<Expr> Parser::parseExpr2() {
