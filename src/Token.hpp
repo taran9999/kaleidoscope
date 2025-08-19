@@ -9,7 +9,9 @@
     X(IF) \
     X(THEN) \
     X(ELSE) \
-    X(FOR) \
+    X(LOOP) \
+    X(RANGE) \
+    X(COMMA) \
     X(EXTERN) \
     X(PLUS) \
     X(MINUS) \

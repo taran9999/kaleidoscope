@@ -15,6 +15,7 @@ class NumLiteral;
 class BinOp;
 class IfExpr;
 class CallExpr;
+class LoopExpr;
 
 class ASTNode {
 public:
@@ -33,6 +34,7 @@ public:
     virtual void visit(BinOp& node) = 0;
     virtual void visit(IfExpr& node) = 0;
     virtual void visit(CallExpr& node) = 0;
+    virtual void visit(LoopExpr& node) = 0;
 };
 
 template<typename Derived>
@@ -141,6 +143,26 @@ public:
 
     void accept(Visitor& v) override {
         Visitable<CallExpr>::accept(v);
+    }
+};
+
+class LoopExpr : public Expr, public Visitable<LoopExpr> {
+public:
+    std::string name;
+    std::unique_ptr<Expr> rangeStart;
+    std::unique_ptr<Expr> rangeEnd;
+    std::unique_ptr<Expr> cond;
+    std::unique_ptr<Expr> step;
+
+    LoopExpr(std::string name,
+             std::unique_ptr<Expr> rangeStart,
+             std::unique_ptr<Expr> rangeEnd,
+             std::unique_ptr<Expr> cond,
+             std::unique_ptr<Expr> step)
+        : name(std::move(name)), rangeStart(std::move(rangeStart)), rangeEnd(std::move(rangeEnd)), cond(std::move(cond)), step(std::move(step)) {}
+
+    void accept(Visitor& v) override {
+        Visitable<LoopExpr>::accept(v);
     }
 };
 

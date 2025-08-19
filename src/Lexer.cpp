@@ -35,7 +35,8 @@ Token Lexer::TokenizeIdentifier() {
     else if(data == "if") return Token(TokenType::IF, "", curr_line, curr_col);
     else if(data == "then") return Token(TokenType::THEN, "", curr_line, curr_col);
     else if(data == "else") return Token(TokenType::ELSE, "", curr_line, curr_col);
-    else if(data == "for") return Token(TokenType::FOR, "", curr_line, curr_col);
+    else if(data == "loop") return Token(TokenType::LOOP, "", curr_line, curr_col);
+    else if(data == "range") return Token(TokenType::RANGE, "", curr_line, curr_col);
     else if(data == "extern") return Token(TokenType::EXTERN, "", curr_line, curr_col);
     else if(data == "end") return Token(TokenType::END, "", curr_line, curr_col);
     else return Token(TokenType::IDENTIFIER, data, curr_line, curr_col);
@@ -70,6 +71,7 @@ Token Lexer::NextToken() {
     else if(c == '(') return Token(TokenType::LPAR, "", line, col);
     else if(c == ')') return Token(TokenType::RPAR, "", line, col);
     else if(c == ';') return Token(TokenType::SEMICOLON, "", line, col);
+    else if(c == ',') return Token(TokenType::COMMA, "", line, col);
 
     else if(c == '<') {
         if(f.peek() == '=') {

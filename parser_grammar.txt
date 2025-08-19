@@ -6,9 +6,12 @@ block = expr*
 var_expr = IDENTIFIER
 num_literal = NUMBER
 
-expr = expr2 | if_expr
+expr = expr2 | if_expr | loop_expr
 expr2 = expr1 (LT expr1)*
 expr1 = expr0 (MINUS expr0)*
 expr0 = num_literal | var_expr
 
 if_expr = IF expr THEN block ELSE block END
+
+# basic loop construct that loops along numbered range with start, end, and increment
+loop_expr = LOOP IDENTIFIER RANGE expr COMMA expr COMMA expr ARROW
