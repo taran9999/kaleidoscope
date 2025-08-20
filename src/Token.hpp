@@ -24,6 +24,8 @@
     X(SEMICOLON) \
     X(END) \
     X(ARROW) \
+    X(VAR) \
+    X(ASSIGN) \
     X(END_PROG)
 
 #define X(name) name,
