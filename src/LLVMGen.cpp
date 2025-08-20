@@ -240,6 +240,16 @@ void LLVMGen::visit(LoopExpr& node) {
     res = llvm::Constant::getNullValue(llvm::Type::getDoubleTy(*ctx));
 }
 
+void LLVMGen::visit(VarInitExpr& node) {
+    error("VarInitExpr codegen not yet implemented");
+    res = nullptr;
+}
+
+void LLVMGen::visit(AssignExpr& node) {
+    error("AssignExpr codegen not yet implemented");
+    res = nullptr;
+}
+
 void LLVMGen::error(std::string message) {
     std::cerr << "LLVMGen: " << message << std::endl;
 }

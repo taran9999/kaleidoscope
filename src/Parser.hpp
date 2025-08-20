@@ -34,12 +34,14 @@ private:
     std::unique_ptr<Expr> parseExpr0();
     std::unique_ptr<Expr> parseExpr1();
     std::unique_ptr<Expr> parseExpr2();
+    std::unique_ptr<Expr> parseExpr3();
 
     std::unique_ptr<VarExpr> parseVarExpr();
     std::unique_ptr<CallExpr> parseCallExpr();
     std::unique_ptr<NumLiteral> parseNumLiteral();
     std::unique_ptr<IfExpr> parseIfExpr();
     std::unique_ptr<LoopExpr> parseLoopExpr();
+    std::unique_ptr<VarInitExpr> parseVarInitExpr();
 
 public:
     explicit Parser(std::vector<Token> tokens)

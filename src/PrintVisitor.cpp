@@ -117,6 +117,31 @@ void PrintVisitor::visit(LoopExpr& node) {
     indent_level = curr_indent;
 }
 
+void PrintVisitor::visit(VarInitExpr& node) {
+    unsigned int curr_indent = indent_level;
+    print_indent(indent_level);
+    std::cout << "VarInit " << node.name << "\n";
+
+    indent_level = curr_indent + 1;
+    node.val->accept(*this);
+
+    indent_level = curr_indent;
+}
+
+void PrintVisitor::visit(AssignExpr& node) {
+    unsigned int curr_indent = indent_level;
+    print_indent(indent_level);
+    std::cout << "Assign\n";
+
+    indent_level = curr_indent + 1;
+    node.lhs->accept(*this);
+
+    indent_level = curr_indent + 1;
+    node.val->accept(*this);
+
+    indent_level = curr_indent;
+}
+
 void PrintVisitor::print_indent(unsigned int level) {
     std::cout << std::string(level * 2, ' ');
 }

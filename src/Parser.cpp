@@ -35,7 +35,8 @@ bool Parser::checkExpr() {
         check(TokenType::IF) ||
         check(TokenType::NUMBER) ||
         check(TokenType::IDENTIFIER) ||
-        check(TokenType::LOOP);
+        check(TokenType::LOOP) ||
+        check(TokenType::VAR);
 }
 
 bool Parser::at_end() {
@@ -113,7 +114,8 @@ std::unique_ptr<Block> Parser::parseBlock() {
 std::unique_ptr<Expr> Parser::parseExpr() {
     if(check(TokenType::IF)) return parseIfExpr();
     else if(check(TokenType::LOOP)) return parseLoopExpr();
-    else return parseExpr2();
+    else if(check(TokenType::VAR)) return parseVarInitExpr();
+    else return parseExpr3();
 }
 
 std::unique_ptr<IfExpr> Parser::parseIfExpr() {
@@ -179,6 +181,27 @@ std::unique_ptr<LoopExpr> Parser::parseLoopExpr() {
     accept(TokenType::END);
 
     return std::make_unique<LoopExpr>(std::move(name), std::move(start), std::move(end), std::move(step), std::move(block));
+}
+
+std::unique_ptr<VarInitExpr> Parser::parseVarInitExpr() {
+    accept(TokenType::VAR);
+    Token varName = accept(TokenType::IDENTIFIER);
+    auto name = varName.data;
+    accept(TokenType::ASSIGN);
+    auto val = parseExpr();
+
+    return std::make_unique<VarInitExpr>(std::move(name), std::move(val));
+}
+
+std::unique_ptr<Expr> Parser::parseExpr3() {
+    auto lhs = parseExpr2();
+    if(check(TokenType::ASSIGN)) {
+        advance();
+        auto rhs = parseExpr3();
+        lhs = std::make_unique<AssignExpr>(std::move(lhs), std::move(rhs));
+    }
+
+    return lhs;
 }
 
 std::unique_ptr<Expr> Parser::parseExpr2() {

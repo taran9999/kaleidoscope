@@ -16,6 +16,8 @@ class BinOp;
 class IfExpr;
 class CallExpr;
 class LoopExpr;
+class VarInitExpr;
+class AssignExpr;
 
 class ASTNode {
 public:
@@ -35,6 +37,8 @@ public:
     virtual void visit(IfExpr& node) = 0;
     virtual void visit(CallExpr& node) = 0;
     virtual void visit(LoopExpr& node) = 0;
+    virtual void visit(VarInitExpr& node) = 0;
+    virtual void visit(AssignExpr& onde) = 0;
 };
 
 template<typename Derived>
@@ -163,6 +167,33 @@ public:
 
     void accept(Visitor& v) override {
         Visitable<LoopExpr>::accept(v);
+    }
+};
+
+class VarInitExpr : public Expr, public Visitable<VarInitExpr> {
+public:
+    std::string name;
+    std::unique_ptr<Expr> val;
+
+    VarInitExpr(std::string name, std::unique_ptr<Expr> val)
+        : name(std::move(name)), val(std::move(val)) {}
+
+    void accept(Visitor& v) override {
+        Visitable<VarInitExpr>::accept(v);
+    }
+};
+
+class AssignExpr : public Expr, public Visitable<AssignExpr> {
+public:
+    std::unique_ptr<Expr> lhs;
+    std::unique_ptr<Expr> val;
+
+    AssignExpr(std::unique_ptr<Expr> lhs,
+               std::unique_ptr<Expr> val)
+        : lhs(std::move(lhs)), val(std::move(val)) {}
+
+    void accept(Visitor& v) override {
+        Visitable<AssignExpr>::accept(v);
     }
 };
 

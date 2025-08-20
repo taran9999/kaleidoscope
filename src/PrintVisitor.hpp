@@ -18,4 +18,6 @@ public:
     void visit(IfExpr& node) override;
     void visit(CallExpr& node) override;
     void visit(LoopExpr& node) override;
+    void visit(VarInitExpr& node) override;
+    void visit(AssignExpr& node) override;
 };
