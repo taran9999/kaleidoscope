@@ -14,6 +14,8 @@ private:
 
     void error(std::string message);
 
+    llvm::AllocaInst* allocLocalVarInFunc(llvm::Function* func, llvm::StringRef varName);
+
 public:
     LLVMGen() : res(nullptr) {
         ctx = std::make_unique<llvm::LLVMContext>();
@@ -24,7 +26,7 @@ public:
     std::unique_ptr<llvm::LLVMContext> ctx;
     std::unique_ptr<llvm::Module> mod;
     std::unique_ptr<llvm::IRBuilder<>> builder;
-    std::map<std::string, llvm::Value*> env;
+    std::map<std::string, llvm::AllocaInst*> env;
 
     void visit(Program& node) override;
     void visit(FuncDef& node) override;

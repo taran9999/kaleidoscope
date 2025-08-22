@@ -6,6 +6,7 @@
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/DerivedTypes.h>
 #include <llvm/IR/Function.h>
+#include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
@@ -40,7 +41,11 @@ void LLVMGen::visit(FuncDef& node) {
     builder->SetInsertPoint(bb);
 
     env.clear();
-    for(auto& arg : f->args()) env[std::string(arg.getName())] = &arg;
+    for(auto& arg : f->args()) {
+        auto* alloc = allocLocalVarInFunc(f, arg.getName());
+        builder->CreateStore(&arg, alloc);
+        env[std::string(arg.getName())] = alloc;
+    }
 
     node.block->accept(*this);
     if(!res) {
@@ -68,10 +73,12 @@ void LLVMGen::visit(Block& node) {
 }
 
 void LLVMGen::visit(VarExpr& node) {
-    res = env[node.name];
-    if(!res) {
+    auto* a = env[node.name];
+    if(!a) {
         error("unbound variable: " + node.name);
     }
+
+    res = builder->CreateLoad(a->getAllocatedType(), a, node.name.c_str());
 }
 
 // TODO: maybe change AST node from int val to float val
@@ -200,16 +207,15 @@ void LLVMGen::visit(LoopExpr& node) {
     llvm::Value* end = res;
 
     auto* currFunc = builder->GetInsertBlock()->getParent();
-    auto* preLoopBlock = builder->GetInsertBlock();
     llvm::BasicBlock* loopBlock = llvm::BasicBlock::Create(*ctx, "loop", currFunc);
     builder->CreateBr(loopBlock);
 
     builder->SetInsertPoint(loopBlock);
-    llvm::PHINode* loopVar = builder->CreatePHI(llvm::Type::getDoubleTy(*ctx), 2, node.name);
-    loopVar->addIncoming(start, preLoopBlock);
+    auto* loopVar = allocLocalVarInFunc(currFunc, node.name);
+    builder->CreateStore(start, loopVar);
 
     // loop var shadows and then restores original value
-    llvm::Value* oldVarVal = env[node.name];
+    llvm::AllocaInst* oldVarVal = env[node.name];
     env[node.name] = loopVar;
 
     node.block->accept(*this);
@@ -228,11 +234,10 @@ void LLVMGen::visit(LoopExpr& node) {
     llvm::Value* nextVar = builder->CreateFAdd(loopVar, step, "nextLoopVar");
     llvm::Value* endCond = builder->CreateFCmpONE(nextVar, end, "loopEndCond");
 
-    auto* loopEnd = builder->GetInsertBlock();
     llvm::BasicBlock* postLoopBlock = llvm::BasicBlock::Create(*ctx, "endLoop", currFunc);
     builder->CreateCondBr(endCond, loopBlock, postLoopBlock);
     builder->SetInsertPoint(postLoopBlock);
-    loopVar->addIncoming(nextVar, loopEnd);
+    builder->CreateStore(nextVar, loopVar);
 
     if(oldVarVal) env[node.name] = oldVarVal;
     else env.erase(node.name);
@@ -262,4 +267,9 @@ void LLVMGen::PrintRes() {
 
     res->print(llvm::outs());
     std::cout << std::endl;
+}
+
+llvm::AllocaInst* LLVMGen::allocLocalVarInFunc(llvm::Function* func, llvm::StringRef varName) {
+    llvm::IRBuilder<> b(&func->getEntryBlock(), func->getEntryBlock().begin());
+    return b.CreateAlloca(llvm::Type::getDoubleTy(*ctx), nullptr, varName);
 }
