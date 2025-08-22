@@ -79,6 +79,7 @@ void LLVMGen::visit(VarExpr& node) {
     }
 
     res = builder->CreateLoad(a->getAllocatedType(), a, node.name.c_str());
+    resAddr = a;
 }
 
 // TODO: maybe change AST node from int val to float val
@@ -246,13 +247,45 @@ void LLVMGen::visit(LoopExpr& node) {
 }
 
 void LLVMGen::visit(VarInitExpr& node) {
-    error("VarInitExpr codegen not yet implemented");
-    res = nullptr;
+    auto* test = env[node.name];
+    if(test) {
+        error("redefined variable: " + node.name);
+        res = nullptr;
+        return;
+    }
+
+    auto* alloc = allocLocalVarInFunc(builder->GetInsertBlock()->getParent(), node.name);
+
+    node.val->accept(*this);
+    if(!res) {
+        error("failed to codegen value of var init: " + node.name);
+        return;
+    }
+    auto* val = res;
+
+    builder->CreateStore(val, alloc);
+    env[node.name] = alloc;
 }
 
 void LLVMGen::visit(AssignExpr& node) {
-    error("AssignExpr codegen not yet implemented");
-    res = nullptr;
+    node.val->accept(*this);
+    if(!res) {
+        error("failed to codegen rhs of assignment");
+        return;
+    }
+    auto* val = res;
+
+    node.lhs->accept(*this);
+    if(!resAddr) {
+        error("failed to get address of lhs of assign");
+        res = nullptr;
+        return;
+    }
+
+    auto* addr = resAddr;
+
+    builder->CreateStore(val, addr);
+    res = val;
 }
 
 void LLVMGen::error(std::string message) {

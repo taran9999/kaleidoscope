@@ -2,6 +2,7 @@
 #include "llvm/IR/Module.h"
 #include "llvm/IR/IRBuilder.h"
 
+#include <llvm/IR/Instructions.h>
 #include <memory>
 #include <string>
 #include <map>
@@ -11,13 +12,14 @@
 class LLVMGen : public Visitor {
 private:
     llvm::Value* res;
+    llvm::AllocaInst* resAddr;
 
     void error(std::string message);
 
     llvm::AllocaInst* allocLocalVarInFunc(llvm::Function* func, llvm::StringRef varName);
 
 public:
-    LLVMGen() : res(nullptr) {
+    LLVMGen() : res(nullptr), resAddr(nullptr) {
         ctx = std::make_unique<llvm::LLVMContext>();
         mod = std::make_unique<llvm::Module>("kl", *ctx);
         builder = std::make_unique<llvm::IRBuilder<>>(*ctx);
