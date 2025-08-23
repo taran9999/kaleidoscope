@@ -71,6 +71,13 @@ void Parser::endProgError() {
 }
 
 std::unique_ptr<Program> Parser::parseProgram() {
+    std::vector<std::unique_ptr<Extern>> externs;
+
+    while(check(TokenType::EXTERN)) {
+        auto e = parseExtern();
+        externs.push_back(std::move(e));
+    }
+
     std::vector<std::unique_ptr<FuncDef>> functions;
 
     while(!at_end()) {
@@ -78,7 +85,7 @@ std::unique_ptr<Program> Parser::parseProgram() {
         functions.push_back(std::move(f));
     }
 
-    return std::make_unique<Program>(std::move(functions));
+    return std::make_unique<Program>(std::move(externs), std::move(functions));
 }
 
 std::unique_ptr<FuncDef> Parser::parseFuncDef() {
@@ -109,6 +116,22 @@ std::unique_ptr<Block> Parser::parseBlock() {
     }
 
     return std::make_unique<Block>(std::move(exprs));
+}
+
+std::unique_ptr<Extern> Parser::parseExtern() {
+    accept(TokenType::EXTERN);
+    Token nameToken = accept(TokenType::IDENTIFIER);
+    auto name = nameToken.data;
+
+    std::vector<std::string> params;
+    while(check(TokenType::IDENTIFIER)) {
+        Token curr = current();
+        params.push_back(curr.data);
+        advance();
+    }
+
+    accept(TokenType::SEMICOLON);
+    return std::make_unique<Extern>(std::move(name), std::move(params));
 }
 
 std::unique_ptr<Expr> Parser::parseExpr() {

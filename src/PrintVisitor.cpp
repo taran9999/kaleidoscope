@@ -7,6 +7,11 @@
 void PrintVisitor::visit(Program& node) {
     std::cout << "Program\n";
 
+    for(const auto& e : node.externs) {
+        indent_level = 1;
+        e->accept(*this);
+    }
+
     for(const auto& fd : node.func_defs) {
         indent_level = 1;
         fd->accept(*this);
@@ -40,6 +45,13 @@ void PrintVisitor::visit(Block& node) {
     }
 
     indent_level = curr_indent;
+}
+
+void PrintVisitor::visit(Extern& node) {
+    print_indent(indent_level);
+    std::cout << "Extern " << node.name;
+    for(const auto& p : node.params) std::cout << " " << p;
+    std::cout << "\n";
 }
 
 void PrintVisitor::visit(VarExpr& node) {

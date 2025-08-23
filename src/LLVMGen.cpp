@@ -14,6 +14,14 @@
 #include <vector>
 
 void LLVMGen::visit(Program& node) {
+    for(const auto& e : node.externs) {
+        e->accept(*this);
+        if(!res) {
+            error("prog gen failed");
+            return;
+        }
+    }
+
     for(const auto& fd : node.func_defs) {
         fd->accept(*this);
         if(!res) {
@@ -62,7 +70,6 @@ void LLVMGen::visit(FuncDef& node) {
 
 void LLVMGen::visit(Block& node) {
     // evaluate the block to the value of the last expression (left in res)
-
     for(auto& e : node.exprs) {
         e->accept(*this);
         if(!res) {
@@ -70,6 +77,23 @@ void LLVMGen::visit(Block& node) {
             return;
         }
     }
+}
+
+void LLVMGen::visit(Extern& node) {
+    // create the function without writing the body
+    std::vector<llvm::Type*> t(node.params.size(), llvm::Type::getDoubleTy(*ctx));
+    llvm::FunctionType* ft = llvm::FunctionType::get(llvm::Type::getDoubleTy(*ctx), t, false);
+    llvm::Function* f = llvm::Function::Create(ft, llvm::Function::ExternalLinkage, node.name, mod.get());
+    if(!f) {
+        error("failed to create function: " + node.name);
+        res = nullptr;
+        return;
+    }
+
+    size_t i = 0;
+    for(auto& arg : f->args()) arg.setName(node.params[i++]);
+
+    res = f;
 }
 
 void LLVMGen::visit(VarExpr& node) {

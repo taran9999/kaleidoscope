@@ -29,6 +29,7 @@ private:
     std::unique_ptr<Program> parseProgram();
     std::unique_ptr<FuncDef> parseFuncDef();
     std::unique_ptr<Block> parseBlock();
+    std::unique_ptr<Extern> parseExtern();
 
     std::unique_ptr<Expr> parseExpr();
     std::unique_ptr<Expr> parseExpr0();

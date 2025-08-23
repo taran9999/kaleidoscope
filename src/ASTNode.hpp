@@ -9,6 +9,7 @@ class Visitor;
 class Program;
 class FuncDef;
 class Block;
+class Extern;
 class Expr;
 class VarExpr;
 class NumLiteral;
@@ -31,6 +32,7 @@ public:
     virtual void visit(Program& node) = 0;
     virtual void visit(FuncDef& node) = 0;
     virtual void visit(Block& node) = 0;
+    virtual void visit(Extern& node) = 0;
     virtual void visit(VarExpr& node) = 0;
     virtual void visit(NumLiteral& node) = 0;
     virtual void visit(BinOp& node) = 0;
@@ -38,7 +40,7 @@ public:
     virtual void visit(CallExpr& node) = 0;
     virtual void visit(LoopExpr& node) = 0;
     virtual void visit(VarInitExpr& node) = 0;
-    virtual void visit(AssignExpr& onde) = 0;
+    virtual void visit(AssignExpr& node) = 0;
 };
 
 template<typename Derived>
@@ -51,13 +53,15 @@ public:
 
 class Program : public Visitable<Program> {
 public:
+    std::vector<std::unique_ptr<Extern>> externs;
     std::vector<std::unique_ptr<FuncDef>> func_defs;
 
-    explicit Program(std::vector<std::unique_ptr<FuncDef>> func_defs)
-        : func_defs(std::move(func_defs)) {}
+    Program(std::vector<std::unique_ptr<Extern>> externs,
+            std::vector<std::unique_ptr<FuncDef>> func_defs)
+        : externs(std::move(externs)), func_defs(std::move(func_defs)) {}
 };
 
-class FuncDef : public Visitable<FuncDef>{
+class FuncDef : public Visitable<FuncDef> {
 public:
     std::string name;
     std::vector<std::string> params;
@@ -75,6 +79,16 @@ public:
 
     explicit Block(std::vector<std::unique_ptr<Expr>> exprs)
         : exprs(std::move(exprs)) {}
+};
+
+class Extern : public Visitable<Extern> {
+public:
+    std::string name;
+    std::vector<std::string> params;
+
+    Extern(std::string name,
+           std::vector<std::string> params)
+        : name(std::move(name)), params(std::move(params)) {}
 };
 
 class Expr : public ASTNode {};
