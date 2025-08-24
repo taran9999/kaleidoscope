@@ -13,13 +13,14 @@ class LLVMGen : public Visitor {
 private:
     llvm::Value* res;
     llvm::AllocaInst* resAddr;
+    bool fail;
 
     void error(std::string message);
 
     llvm::AllocaInst* allocLocalVarInFunc(llvm::Function* func, llvm::StringRef varName);
 
 public:
-    LLVMGen() : res(nullptr), resAddr(nullptr) {
+    LLVMGen() : res(nullptr), resAddr(nullptr), fail(false) {
         ctx = std::make_unique<llvm::LLVMContext>();
         mod = std::make_unique<llvm::Module>("kl", *ctx);
         builder = std::make_unique<llvm::IRBuilder<>>(*ctx);
@@ -44,4 +45,5 @@ public:
     void visit(AssignExpr& node) override;
 
     void PrintRes();
+    void EmitObject();
 };

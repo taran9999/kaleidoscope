@@ -78,6 +78,7 @@ int main(int argc, char* argv[]) {
     // gen.visit(*root);
     root->accept(gen);
     gen.mod->print(llvm::outs(), nullptr);
+    gen.EmitObject();
 }
 
 // // test mlir

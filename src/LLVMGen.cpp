@@ -8,9 +8,20 @@
 #include <llvm/IR/Function.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Instructions.h>
+#include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/Type.h>
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Verifier.h>
+#include <llvm/MC/TargetRegistry.h>
+#include <llvm/Support/CodeGen.h>
+#include <llvm/Support/FileSystem.h>
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/Support/raw_ostream.h>
+#include <llvm/Target/TargetMachine.h>
+#include <llvm/Target/TargetOptions.h>
+#include <llvm/TargetParser/Host.h>
+#include <llvm/TargetParser/Triple.h>
+#include <system_error>
 #include <vector>
 
 void LLVMGen::visit(Program& node) {
@@ -324,6 +335,50 @@ void LLVMGen::PrintRes() {
 
     res->print(llvm::outs());
     std::cout << std::endl;
+}
+
+void LLVMGen::EmitObject() {
+    auto targetTripleStr = llvm::sys::getDefaultTargetTriple();
+    auto targetTriple = llvm::Triple(targetTripleStr);
+
+    llvm::InitializeAllTargetInfos();
+    llvm::InitializeAllTargets();
+    llvm::InitializeAllTargetMCs();
+    llvm::InitializeAllAsmParsers();
+    llvm::InitializeAllAsmPrinters();
+
+    std::string err;
+    auto target = llvm::TargetRegistry::lookupTarget(targetTriple, err);
+    if(!target) {
+        error(err);
+        return;
+    }
+
+    auto cpu = "generic";
+    auto features = "";
+    llvm::TargetOptions opt;
+    auto targetMachine = target->createTargetMachine(targetTriple, cpu, features, opt, llvm::Reloc::PIC_);
+
+    mod->setDataLayout(targetMachine->createDataLayout());
+    mod->setTargetTriple(targetTriple);
+
+    auto fname = "out.o";
+    std::error_code ec;
+    llvm::raw_fd_ostream dest(fname, ec, llvm::sys::fs::OF_None);
+    if(ec) {
+        error("failed to open file: " + ec.message());
+        return;
+    }
+
+    llvm::legacy::PassManager pm;
+    auto ftype = llvm::CodeGenFileType::ObjectFile;
+    if(targetMachine->addPassesToEmitFile(pm, dest, nullptr, ftype)) {
+        error("targetMachine can't emit file of this type");
+        return;
+    }
+
+    pm.run(*mod);
+    dest.flush();
 }
 
 llvm::AllocaInst* LLVMGen::allocLocalVarInFunc(llvm::Function* func, llvm::StringRef varName) {
