@@ -22,7 +22,7 @@ file(GLOB SRC_FILES src/*.cpp)
 
 add_executable(main ${SRC_FILES})
 
-llvm_map_components_to_libnames(llvm_libs support core irreader)
+llvm_map_components_to_libnames(llvm_libs support core irreader orcjit native nativecodegen)
 
 target_link_libraries(main
     PRIVATE
