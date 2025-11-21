@@ -1,0 +1,5 @@
+def main ->
+    loop i range 0, 5, 1 ->
+        10
+    end
+end

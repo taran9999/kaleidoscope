@@ -1,0 +1,5 @@
+extern printd x;
+
+def main ->
+    printd(5)
+end

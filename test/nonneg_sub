@@ -1,0 +1,7 @@
+def sub x y ->
+    if x < y then
+        0
+    else
+        x - y
+    end
+end
