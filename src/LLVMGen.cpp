@@ -267,7 +267,8 @@ void LLVMGen::visit(LoopExpr& node) {
     }
     llvm::Value* step = res;
 
-    llvm::Value* nextVar = builder->CreateFAdd(loopVar, step, "nextLoopVar");
+    llvm::Value* loopVarLoaded = builder->CreateLoad(loopVar->getAllocatedType(), loopVar, "loopVarLoad");
+    llvm::Value* nextVar = builder->CreateFAdd(loopVarLoaded, step, "nextLoopVar");
     llvm::Value* endCond = builder->CreateFCmpONE(nextVar, end, "loopEndCond");
 
     llvm::BasicBlock* postLoopBlock = llvm::BasicBlock::Create(*ctx, "endLoop", currFunc);
